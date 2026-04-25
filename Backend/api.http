@@ -1,0 +1,71 @@
+@baseUrl = http://localhost:5000/api
+@token = YOUR_JWT_TOKEN_HERE
+
+### --------------------------------
+### Health Check
+### --------------------------------
+
+GET {{baseUrl}}/health
+
+### --------------------------------
+### Auth Service
+### --------------------------------
+
+### Register a new user
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "Password123!"
+}
+
+### Login User
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123!"
+}
+
+### Forgot Password
+POST {{baseUrl}}/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### Reset Password (requires token from email)
+POST {{baseUrl}}/auth/reset-password/YOUR_RESET_TOKEN
+Content-Type: application/json
+
+{
+  "password": "NewPassword123!"
+}
+
+### --------------------------------
+### User Service
+### --------------------------------
+
+### Get User Profile
+GET {{baseUrl}}/user/profile
+Authorization: Bearer {{token}}
+
+### Update User Profile
+PUT {{baseUrl}}/user/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Updated Test User"
+}
+
+### --------------------------------
+### Debug Service
+### --------------------------------
+
+### Get All Users (for debugging)
+GET http://localhost:5000/debug/users
