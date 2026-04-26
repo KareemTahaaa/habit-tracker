@@ -1,4 +1,7 @@
 const Habit = require('../models/Habit');
+const User = require('../models/User');
+const NotificationSettings = require('../models/NotificationSettings');
+const { sendHabitCompletionEmail, sendStreakMilestoneEmail } = require('./emailNotificationService');
 
 function calculateCurrentStreak(dates) {
   if (!dates || dates.length === 0) return 0;
@@ -91,6 +94,40 @@ const markHabitComplete = async (userId, habitId) => {
   if (!alreadyCompleted) {
     habit.completedDates.push(new Date());
     await habit.save();
+
+    // ─── Trigger Notifications ───
+    try {
+      const [user, settings] = await Promise.all([
+        User.findById(userId),
+        NotificationSettings.findOne({ userId }),
+      ]);
+
+      if (user && settings && settings.emailNotificationsEnabled) {
+        const streak = calculateCurrentStreak(habit.completedDates);
+
+        // Check for milestones immediately
+        const milestones = settings.streakMilestones || [7, 14, 30, 60, 100];
+        if (milestones.includes(streak)) {
+          await sendStreakMilestoneEmail({
+            to: user.email,
+            userName: user.name,
+            habitTitle: habit.title,
+            streak,
+            clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+          });
+        } else {
+          // Regular completion confirmation
+          await sendHabitCompletionEmail({
+            to: user.email,
+            userName: user.name,
+            habitTitle: habit.title,
+            streak,
+          });
+        }
+      }
+    } catch (err) {
+      console.error('❌ Failed to send completion email:', err.message);
+    }
   }
 
   return attachCurrentStreak(habit);

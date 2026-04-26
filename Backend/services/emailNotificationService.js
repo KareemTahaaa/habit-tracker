@@ -3,7 +3,7 @@ const sendEmail = require('../utils/sendEmail');
 /**
  * Email Notification Service
  * Service 4: Notification and Reminder Service
- * Assigned Student: Kareem Taha (234007)
+ *  Kareem Taha234007
  *
  * Handles all outbound email types:
  *  - Habit reminder emails
@@ -133,7 +133,56 @@ const sendStreakMilestoneEmail = async ({ to, userName, habitTitle, streak, clie
   await sendEmail({ to, subject: `${emoji} You hit a ${streak}-Day Streak on "${habitTitle}"!`, html });
 };
 
-// ─── 4. System Email (password reset / account update / announcement) ─────────
+// ─── 4. Habit Completion Email ────────────────────────────────────────────────
+/**
+ * @param {string} to          - Recipient email
+ * @param {string} userName    - Recipient's name
+ * @param {string} habitTitle  - Habit name
+ * @param {number} streak      - Current streak count
+ */
+const sendHabitCompletionEmail = async ({ to, userName, habitTitle, streak }) => {
+  const html = wrapHtml(`
+    <div class="header">
+      <h1>✅ Habit Completed!</h1>
+      <p>Great job on staying consistent</p>
+    </div>
+    <div class="body">
+      <p>Hey <strong>${userName}</strong>,</p>
+      <p>You just marked <strong>"${habitTitle}"</strong> as completed for today!</p>
+      <p style="text-align:center;">
+        <span class="badge" style="font-size:18px;">🔥 Current Streak: ${streak} Days</span>
+      </p>
+      <p>Every small win counts. Keep up that momentum! 🚀</p>
+    </div>
+  `);
+
+  await sendEmail({ to, subject: `✅ Done! Habit Completed: "${habitTitle}"`, html });
+};
+
+// ─── 5. Settings Update Email ──────────────────────────────────────────────────
+/**
+ * @param {string} to          - Recipient email
+ * @param {string} userName    - Recipient's name
+ * @param {string} settingName - Name of the setting changed
+ * @param {string} newValue    - New value of the setting
+ */
+const sendSettingsUpdateEmail = async ({ to, userName, settingName, newValue }) => {
+  const html = wrapHtml(`
+    <div class="header">
+      <h1>⚙️ Settings Updated</h1>
+      <p>Your preferences have been saved</p>
+    </div>
+    <div class="body">
+      <p>Hey <strong>${userName}</strong>,</p>
+      <p>Your <strong>${settingName}</strong> has been successfully updated to <strong>${newValue}</strong>.</p>
+      <p>If you didn't perform this action, please secure your account immediately.</p>
+    </div>
+  `);
+
+  await sendEmail({ to, subject: `⚙️ Notification Settings Updated`, html });
+};
+
+// ─── 6. System Email (password reset / account update / announcement) ─────────
 /**
  * @param {string} to       - Recipient email
  * @param {string} subject  - Email subject
@@ -158,5 +207,7 @@ module.exports = {
   sendHabitReminderEmail,
   sendStreakDangerEmail,
   sendStreakMilestoneEmail,
+  sendHabitCompletionEmail,
+  sendSettingsUpdateEmail,
   sendSystemEmail,
 };

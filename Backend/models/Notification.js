@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 /**
  * Notification Model
  * Service 4: Notification and Reminder Service
- * Assigned Student: Kareem Taha (234007)
+ * Kareem Taha234007
  *
  * Stores all notification records in MongoDB.
  */

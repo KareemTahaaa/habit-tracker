@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 /**
  * NotificationSettings Model
  * Service 4: Notification and Reminder Service
- * Assigned Student: Kareem Taha (234007)
+ * Kareem Taha234007
  *
  * Stores each user's personal notification preferences.
  * One document per user (upserted on first access).

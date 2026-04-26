@@ -1,12 +1,12 @@
 const Notification = require('../models/Notification');
 const NotificationSettings = require('../models/NotificationSettings');
-const { sendSystemEmail } = require('../services/emailNotificationService');
+const { sendSystemEmail, sendSettingsUpdateEmail } = require('../services/emailNotificationService');
 const { sendPushNotification } = require('../services/pushNotificationService');
 
 /**
  * Notification Controller
  * Service 4: Notification and Reminder Service
- * Assigned Student: Kareem Taha (234007)
+ * Kareem Taha234007
  *
  * 3-Layer Architecture — Controller Layer
  * Handles all HTTP requests for the notification service.
@@ -208,6 +208,20 @@ const updateSettings = async (req, res) => {
       { $set: updates },
       { new: true, upsert: true, runValidators: true }
     );
+
+    // Send confirmation email if meaningful settings changed
+    if (settings && settings.emailNotificationsEnabled && (updates.defaultReminderTime || updates.habitRemindersEnabled !== undefined)) {
+      try {
+        await sendSettingsUpdateEmail({
+          to: req.user.email,
+          userName: req.user.name,
+          settingName: updates.defaultReminderTime ? 'Reminder Time' : 'Habit Reminders Status',
+          newValue: updates.defaultReminderTime || (updates.habitRemindersEnabled ? 'Enabled' : 'Disabled'),
+        });
+      } catch (err) {
+        console.error('❌ Failed to send settings update email:', err.message);
+      }
+    }
 
     res.json({
       success: true,

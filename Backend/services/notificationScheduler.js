@@ -9,7 +9,7 @@ const { sendHabitReminderPush, sendStreakDangerPush, sendStreakMilestonePush } =
 /**
  * Cron / Scheduler Service
  * Service 4: Notification and Reminder Service
- * Assigned Student: Kareem Taha (234007)
+ * Kareem Taha234007
  *
  * Runs background jobs every minute to:
  *  1. Send scheduled habit reminder notifications
