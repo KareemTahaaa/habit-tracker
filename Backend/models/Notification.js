@@ -1,12 +1,5 @@
 const mongoose = require('mongoose');
 
-/**
- * Notification Model
- * Service 4: Notification and Reminder Service
- * Kareem Taha234007
- *
- * Stores all notification records in MongoDB.
- */
 const NotificationSchema = new mongoose.Schema(
   {
     userId: {
@@ -15,20 +8,16 @@ const NotificationSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-
-    // ─── Type ──────────────────────────────────────────────────────────────────
     type: {
       type: String,
       enum: [
-        'habit_reminder',   // Scheduled habit reminder
-        'streak_alert',     // Streak danger / milestone
-        'email',            // System email (password reset, account update)
-        'push',             // Browser / mobile push notification
+        'habit_reminder',
+        'streak_alert',
+        'email',
+        'push',
       ],
       required: true,
     },
-
-    // ─── Content ────────────────────────────────────────────────────────────
     title: {
       type: String,
       required: true,
@@ -39,8 +28,6 @@ const NotificationSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
-    // ─── Status ─────────────────────────────────────────────────────────────
     status: {
       type: String,
       enum: ['pending', 'sent', 'failed'],
@@ -50,15 +37,11 @@ const NotificationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-
-    // ─── Related habit (optional) ────────────────────────────────────────────
     habitId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Habit',
       default: null,
     },
-
-    // ─── Scheduling ─────────────────────────────────────────────────────────
     scheduledAt: {
       type: Date,
       default: null,
@@ -67,8 +50,6 @@ const NotificationSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-
-    // ─── Error info (for failed notifications) ───────────────────────────────
     errorMessage: {
       type: String,
       default: null,
@@ -79,7 +60,6 @@ const NotificationSchema = new mongoose.Schema(
   }
 );
 
-// Index for efficiently querying unsent scheduled notifications (used by cron)
 NotificationSchema.index({ status: 1, scheduledAt: 1 });
 
 const Notification = mongoose.model('Notification', NotificationSchema);

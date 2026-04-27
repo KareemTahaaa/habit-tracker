@@ -1,17 +1,5 @@
 const sendEmail = require('../utils/sendEmail');
 
-/**
- * Email Notification Service
- * Service 4: Notification and Reminder Service
- *  Kareem Taha234007
- *
- * Handles all outbound email types:
- *  - Habit reminder emails
- *  - Streak alert emails (danger + milestone)
- *  - System emails (password reset, account updates, announcements)
- */
-
-// ─── Shared HTML wrapper ───────────────────────────────────────────────────────
 const wrapHtml = (body) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -45,13 +33,6 @@ const wrapHtml = (body) => `
 </html>
 `;
 
-// ─── 1. Habit Reminder Email ──────────────────────────────────────────────────
-/**
- * @param {string} to          - Recipient email
- * @param {string} userName    - Recipient's display name
- * @param {string} habitTitle  - Name of the habit
- * @param {string} clientUrl   - Frontend base URL
- */
 const sendHabitReminderEmail = async ({ to, userName, habitTitle, clientUrl }) => {
   const html = wrapHtml(`
     <div class="header">
@@ -73,14 +54,6 @@ const sendHabitReminderEmail = async ({ to, userName, habitTitle, clientUrl }) =
   await sendEmail({ to, subject: `⏰ Reminder: Complete "${habitTitle}" Today`, html });
 };
 
-// ─── 2. Streak Danger Alert Email ────────────────────────────────────────────
-/**
- * @param {string} to          - Recipient email
- * @param {string} userName    - Recipient's name
- * @param {string} habitTitle  - Habit name
- * @param {number} streak      - Current streak count
- * @param {string} clientUrl   - Frontend base URL
- */
 const sendStreakDangerEmail = async ({ to, userName, habitTitle, streak, clientUrl }) => {
   const html = wrapHtml(`
     <div class="header">
@@ -101,14 +74,6 @@ const sendStreakDangerEmail = async ({ to, userName, habitTitle, streak, clientU
   await sendEmail({ to, subject: `🔥 Streak Alert: Don't Break Your ${streak}-Day Streak!`, html });
 };
 
-// ─── 3. Streak Milestone Email ────────────────────────────────────────────────
-/**
- * @param {string} to          - Recipient email
- * @param {string} userName    - Recipient's name
- * @param {string} habitTitle  - Habit name
- * @param {number} streak      - Milestone reached (e.g. 7, 30, 100)
- * @param {string} clientUrl   - Frontend base URL
- */
 const sendStreakMilestoneEmail = async ({ to, userName, habitTitle, streak, clientUrl }) => {
   const emoji = streak >= 100 ? '🏆' : streak >= 30 ? '⭐' : '🎉';
   const html = wrapHtml(`
@@ -133,13 +98,6 @@ const sendStreakMilestoneEmail = async ({ to, userName, habitTitle, streak, clie
   await sendEmail({ to, subject: `${emoji} You hit a ${streak}-Day Streak on "${habitTitle}"!`, html });
 };
 
-// ─── 4. Habit Completion Email ────────────────────────────────────────────────
-/**
- * @param {string} to          - Recipient email
- * @param {string} userName    - Recipient's name
- * @param {string} habitTitle  - Habit name
- * @param {number} streak      - Current streak count
- */
 const sendHabitCompletionEmail = async ({ to, userName, habitTitle, streak }) => {
   const html = wrapHtml(`
     <div class="header">
@@ -159,13 +117,6 @@ const sendHabitCompletionEmail = async ({ to, userName, habitTitle, streak }) =>
   await sendEmail({ to, subject: `✅ Done! Habit Completed: "${habitTitle}"`, html });
 };
 
-// ─── 5. Settings Update Email ──────────────────────────────────────────────────
-/**
- * @param {string} to          - Recipient email
- * @param {string} userName    - Recipient's name
- * @param {string} settingName - Name of the setting changed
- * @param {string} newValue    - New value of the setting
- */
 const sendSettingsUpdateEmail = async ({ to, userName, settingName, newValue }) => {
   const html = wrapHtml(`
     <div class="header">
@@ -182,13 +133,6 @@ const sendSettingsUpdateEmail = async ({ to, userName, settingName, newValue }) 
   await sendEmail({ to, subject: `⚙️ Notification Settings Updated`, html });
 };
 
-// ─── 6. System Email (password reset / account update / announcement) ─────────
-/**
- * @param {string} to       - Recipient email
- * @param {string} subject  - Email subject
- * @param {string} heading  - Bold heading text inside email
- * @param {string} bodyHtml - Raw inner HTML body to inject
- */
 const sendSystemEmail = async ({ to, subject, heading, bodyHtml }) => {
   const html = wrapHtml(`
     <div class="header">

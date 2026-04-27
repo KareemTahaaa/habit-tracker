@@ -3,16 +3,6 @@ const NotificationSettings = require('../models/NotificationSettings');
 const { sendSystemEmail, sendSettingsUpdateEmail } = require('../services/emailNotificationService');
 const { sendPushNotification } = require('../services/pushNotificationService');
 
-/**
- * Notification Controller
- * Service 4: Notification and Reminder Service
- * Kareem Taha234007
- *
- * 3-Layer Architecture — Controller Layer
- * Handles all HTTP requests for the notification service.
- */
-
-// ─── Helper: default settings object ─────────────────────────────────────────
 const defaultSettings = {
   habitRemindersEnabled:    true,
   streakAlertsEnabled:      true,
@@ -23,10 +13,6 @@ const defaultSettings = {
   pushSubscription:         null,
 };
 
-// ─── GET /api/notifications ───────────────────────────────────────────────────
-/**
- * Get all notifications for the authenticated user (paginated)
- */
 const getNotifications = async (req, res) => {
   try {
     const page  = Math.max(1, parseInt(req.query.page)  || 1);
@@ -67,10 +53,6 @@ const getNotifications = async (req, res) => {
   }
 };
 
-// ─── PATCH /api/notifications/:id/read ───────────────────────────────────────
-/**
- * Mark a single notification as read
- */
 const markAsRead = async (req, res) => {
   try {
     const notif = await Notification.findOneAndUpdate(
@@ -89,10 +71,6 @@ const markAsRead = async (req, res) => {
   }
 };
 
-// ─── PATCH /api/notifications/read-all ───────────────────────────────────────
-/**
- * Mark ALL notifications as read for the authenticated user
- */
 const markAllAsRead = async (req, res) => {
   try {
     const result = await Notification.updateMany(
@@ -110,10 +88,6 @@ const markAllAsRead = async (req, res) => {
   }
 };
 
-// ─── DELETE /api/notifications/:id ───────────────────────────────────────────
-/**
- * Delete a single notification
- */
 const deleteNotification = async (req, res) => {
   try {
     const notif = await Notification.findOneAndDelete({
@@ -131,10 +105,6 @@ const deleteNotification = async (req, res) => {
   }
 };
 
-// ─── DELETE /api/notifications ───────────────────────────────────────────────
-/**
- * Clear all notifications for the authenticated user
- */
 const clearAllNotifications = async (req, res) => {
   try {
     const result = await Notification.deleteMany({ userId: req.user._id });
@@ -148,11 +118,6 @@ const clearAllNotifications = async (req, res) => {
   }
 };
 
-// ─── GET /api/notifications/settings ─────────────────────────────────────────
-/**
- * Get the authenticated user's notification settings
- * Creates default settings doc if none exists yet
- */
 const getSettings = async (req, res) => {
   try {
     let settings = await NotificationSettings.findOne({ userId: req.user._id });
@@ -170,10 +135,6 @@ const getSettings = async (req, res) => {
   }
 };
 
-// ─── PUT /api/notifications/settings ─────────────────────────────────────────
-/**
- * Update the authenticated user's notification settings
- */
 const updateSettings = async (req, res) => {
   try {
     const allowed = [
@@ -193,7 +154,6 @@ const updateSettings = async (req, res) => {
       }
     }
 
-    // Validate reminder time format HH:MM
     if (updates.defaultReminderTime) {
       if (!/^\d{2}:\d{2}$/.test(updates.defaultReminderTime)) {
         return res.status(400).json({
@@ -209,7 +169,6 @@ const updateSettings = async (req, res) => {
       { new: true, upsert: true, runValidators: true }
     );
 
-    // Send confirmation email if meaningful settings changed
     if (settings && settings.emailNotificationsEnabled && (updates.defaultReminderTime || updates.habitRemindersEnabled !== undefined)) {
       try {
         await sendSettingsUpdateEmail({
@@ -233,10 +192,6 @@ const updateSettings = async (req, res) => {
   }
 };
 
-// ─── POST /api/notifications/subscribe-push ──────────────────────────────────
-/**
- * Save a Web Push subscription object for the user
- */
 const subscribePush = async (req, res) => {
   try {
     const { subscription } = req.body;
@@ -256,7 +211,6 @@ const subscribePush = async (req, res) => {
       { new: true, upsert: true }
     );
 
-    // Send a welcome push to confirm it works
     await sendPushNotification(subscription, {
       title: '🔔 Push Notifications Enabled!',
       body:  'You will now receive real-time habit reminders.',
@@ -269,10 +223,6 @@ const subscribePush = async (req, res) => {
   }
 };
 
-// ─── POST /api/notifications/unsubscribe-push ────────────────────────────────
-/**
- * Remove the user's push subscription
- */
 const unsubscribePush = async (req, res) => {
   try {
     const settings = await NotificationSettings.findOneAndUpdate(
@@ -287,10 +237,6 @@ const unsubscribePush = async (req, res) => {
   }
 };
 
-// ─── POST /api/notifications/test-email ──────────────────────────────────────
-/**
- * Send a test email to the authenticated user (useful for demo/testing)
- */
 const sendTestEmail = async (req, res) => {
   try {
     await sendSystemEmail({
@@ -309,7 +255,6 @@ const sendTestEmail = async (req, res) => {
       `,
     });
 
-    // Log it
     await Notification.create({
       userId: req.user._id,
       type: 'email',
@@ -325,10 +270,6 @@ const sendTestEmail = async (req, res) => {
   }
 };
 
-// ─── GET /api/notifications/stats ────────────────────────────────────────────
-/**
- * Quick stats for the authenticated user's notifications
- */
 const getStats = async (req, res) => {
   try {
     const userId = req.user._id;

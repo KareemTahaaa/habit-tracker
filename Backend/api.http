@@ -38,7 +38,7 @@ Content-Type: application/json
   "email": "test@example.com"
 }
 
-### Reset Password (requires token from email)
+### Reset Password 
 POST {{baseUrl}}/auth/reset-password/YOUR_RESET_TOKEN
 Content-Type: application/json
 

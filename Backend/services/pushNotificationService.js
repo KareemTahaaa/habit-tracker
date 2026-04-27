@@ -1,16 +1,5 @@
 const webpush = require('web-push');
 
-/**
- * Push Notification Service (Web Push / VAPID)
- * Service 4: Notification and Reminder Service
- * Assigned Student: Kareem Taha (234007)
- *
- * Sends browser push notifications using the Web Push Protocol.
- * Requires VAPID keys (see .env).
- */
-
-// ─── Configure VAPID keys ──────────────────────────────────────────────────────
-// Generate keys once with: npx web-push generate-vapid-keys
 if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
   webpush.setVapidDetails(
     `mailto:${process.env.FROM_EMAIL || 'admin@habittracker.com'}`,
@@ -19,12 +8,6 @@ if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
   );
 }
 
-/**
- * Send a push notification to a single subscriber.
- * @param {Object} subscription  - Web Push subscription object { endpoint, keys: { p256dh, auth } }
- * @param {Object} payload       - { title, body, icon?, url? }
- * @returns {boolean}            - true if sent successfully, false on failure
- */
 const sendPushNotification = async (subscription, payload) => {
   if (!subscription || !subscription.endpoint) {
     console.warn('⚠️  Push: No valid subscription provided.');
@@ -50,7 +33,6 @@ const sendPushNotification = async (subscription, payload) => {
     console.log(`📲 Push sent to endpoint: ${subscription.endpoint.substring(0, 40)}...`);
     return true;
   } catch (error) {
-    // 410 Gone = subscription expired/revoked — caller should remove it
     if (error.statusCode === 410) {
       console.warn('📲 Push: Subscription expired (410). Should be removed from DB.');
     } else {
@@ -60,9 +42,6 @@ const sendPushNotification = async (subscription, payload) => {
   }
 };
 
-/**
- * Send a habit reminder push notification
- */
 const sendHabitReminderPush = (subscription, habitTitle) =>
   sendPushNotification(subscription, {
     title: '⏰ Habit Reminder',
@@ -70,9 +49,6 @@ const sendHabitReminderPush = (subscription, habitTitle) =>
     url:   '/habits',
   });
 
-/**
- * Send a streak danger push notification
- */
 const sendStreakDangerPush = (subscription, { habitTitle, streak }) =>
   sendPushNotification(subscription, {
     title: '🔥 Streak in Danger!',
@@ -80,9 +56,6 @@ const sendStreakDangerPush = (subscription, { habitTitle, streak }) =>
     url:   '/habits',
   });
 
-/**
- * Send a streak milestone push notification
- */
 const sendStreakMilestonePush = (subscription, { habitTitle, streak }) =>
   sendPushNotification(subscription, {
     title: `🎉 ${streak}-Day Streak!`,

@@ -14,38 +14,23 @@ const {
   getStats,
 } = require('../controllers/notificationController');
 
-/**
- * Notification Routes
- * Service 4: Notification and Reminder Service
- * Assigned Student: Kareem Taha (234007)
- *
- * All routes require authentication (JWT via protectRoute middleware).
- *
- * Base: /api/notifications
- */
-
 const router = express.Router();
 
-// All notification routes are protected
 router.use(protectRoute);
 
-// ─── Notification CRUD ────────────────────────────────────────────────────────
-router.get('/',              getNotifications);       // GET  /api/notifications
-router.delete('/',           clearAllNotifications);  // DELETE /api/notifications (clear all)
-router.patch('/:id/read',    markAsRead);             // PATCH /api/notifications/:id/read
-router.patch('/read-all',    markAllAsRead);          // PATCH /api/notifications/read-all
-router.delete('/:id',        deleteNotification);     // DELETE /api/notifications/:id
+router.get('/', getNotifications);
+router.delete('/', clearAllNotifications);
+router.patch('/:id/read', markAsRead);
+router.patch('/read-all', markAllAsRead);
+router.delete('/:id', deleteNotification);
 
-// ─── Settings ─────────────────────────────────────────────────────────────────
-router.get('/settings',      getSettings);            // GET  /api/notifications/settings
-router.put('/settings',      updateSettings);         // PUT  /api/notifications/settings
+router.get('/settings', getSettings);
+router.put('/settings', updateSettings);
 
-// ─── Push Subscription ───────────────────────────────────────────────────────
-router.post('/subscribe-push',   subscribePush);      // POST /api/notifications/subscribe-push
-router.post('/unsubscribe-push', unsubscribePush);    // POST /api/notifications/unsubscribe-push
+router.post('/subscribe-push', subscribePush);
+router.post('/unsubscribe-push', unsubscribePush);
 
-// ─── Utility ─────────────────────────────────────────────────────────────────
-router.post('/test-email',   sendTestEmail);          // POST /api/notifications/test-email
-router.get('/stats',         getStats);               // GET  /api/notifications/stats
+router.post('/test-email', sendTestEmail);
+router.get('/stats', getStats);
 
 module.exports = router;
